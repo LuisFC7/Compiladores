@@ -18,3 +18,8 @@ print(12aa+asa)
 print(aaa+)
 print(12aa)
 print(a+12aa)
+
+
+Expresion regular para identificar todas las posibles formas de funciones incluyendo el paso de parametros
+def[\s\t]+[a-zA-z][\w]+\({1}(([\s]+)*[a-zA-z][\w]+(([\=])?([\d]+)*[\']?([a-zA-z]+)*[\']?)*[\,]*([\s]+)*[\w])*\){1}\:{1}
+
