@@ -1,0 +1,10 @@
+#Here you have the read of txt
+def leertexto():
+    archivo=open("prueba.txt")
+    #Validate if file is readable
+    if(archivo.readable()):
+        lineas=[archivo.read()]
+        print(lineas)
+    
+    
+leertexto()
