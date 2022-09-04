@@ -1,0 +1,4 @@
+def prueba():
+    print()
+    
+prueba()

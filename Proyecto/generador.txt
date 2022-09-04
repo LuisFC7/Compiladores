@@ -1,0 +1,4 @@
+def llenarLista(longitud):
+def sumatoria(Lista):
+def calcularProducto(Lista):
+print("Bienvenido a compiladores")
