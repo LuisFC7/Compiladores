@@ -1,5 +1,5 @@
-def impresion(mensaje,informacion):
-    print(mensaje,informacion)
+d   ef impresion(mensaje,informacion):
+    print(  mensaje,  informacion)
 def llenarLista(longitud):
     Contenedor=[]
     for i in range(0, longitud):
