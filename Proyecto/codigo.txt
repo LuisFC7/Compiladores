@@ -1,4 +1,4 @@
-d   ef impresion(mensaje,informacion):
+def impresion(mensaje,informacion):
     print(  mensaje,  informacion)
 def llenarLista(longitud):
     Contenedor=[]

@@ -4,7 +4,7 @@ def llenarLista(longitud):
     Contenedor=[]
     for  i in range(0, longitud):
         elemento = int(input("Introduce un numero: "))
-        Contenedor.append(elemento) 
+        Contenedor  . append(elemento) 
     return Contenedor
 def sumatoria(Lista):
     suma=0
