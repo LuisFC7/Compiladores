@@ -1,4 +1,5 @@
 import re
+import numpy as np
 REdef="\A(def[\s]*[\t]*([a-zA-Z][\w]+)[\(]([\s]*[\t]*)(([a-zA-Z][\w]*)|([\d]*)|([a-zA-Z][\d]*))([\s]*|[\t]*)?(([\,]([\s]*)[a-zA-Z][\w]*)|([\,]([\s]*)[\d]+)|([\,]([\s]*)[a-zA-Z][\d]+))*([\s]*[\t]*)[\)]\:)"
 REprint="print([\s]*|[\t]*)[\(]([\s]*[\t]*)(([\"]([\s]*[\t]*[\w]*)*[\"])|([\']([\s]*[\t]*[\w]*)*[\'])|([a-zA-Z][\w]*)|([a-zA-Z][\d]*)|([\d]*))([\s]*[\t]*)*([\s]*|[\t]*)?(([\,]([\s]*)[a-zA-Z][\w]*)|([\,]([\s]*)[a-zA-Z][\d]*)|([\,]([\s]*)[\d]*)|([\,]([\s]*)[\"]([\s]*[\t]*[\w]*)*[\"])|([\,]([\s]*)[\']([\s]*[\t]*[\w]*)*[\']))*([\s]*[\t]*)*\)"
 REfor="for([\s]+[\t]*)[\w]+([\s]+[\t]*)in([\s]+[\t]*)range([\s]*[\t]*)\(([\s]*[\t]*)[\d]+([\s]*[\t]*)[\,]([\s]*|[\t]*)((len([\s]*[\t]*)\(([\s]*[\t]*)([a-zA-z][\w]*)([\s]*[\t]*)\))|([a-zA-Z][\w]*)|([a-zA-Z][\d]*)|([\d]+))([\s]*[\t]*)\)([\s]*[\t]*)\:"
@@ -30,6 +31,8 @@ RElastfun="([\w]+[a-zA-Z]+)+[\s]*[\=][\s]*([\w]+[a-zA-Z]+)+[\s]*[\(][\s]*([\w]+[
 REtry="\Aimpresion"
 REtrypam1="[\"]([\w]+[\s]*)*[\:][\s]*[\"]"
 REtrypam2="[\,][\s]*([\w]+[a-zA-Z]+)+"
+
+######################Aqui comienza la validación de la segunda parte, expresiones regulares para las funciones
 
 
 
@@ -126,14 +129,13 @@ def traduccionmain():
         lineas=archivo.readlines()
     else:
         print("Error al abrir el archivo.")
-
+    
     #creación de diccionario
     contenido="string"
     diccionario=[]
     parametros=[]
     funciones=[]
     variables=[]
-    cont=1
     #Aqui se empieza a escribir en el cpp
     with open('traduccion.cpp','w') as filename:
         #declaración de librerias y estructura fundamental
@@ -167,7 +169,7 @@ def traduccionmain():
                 filename.write(identacion+"printf("+contenidoaux+");\n")
                 diccionario=contenidoaux
                 #Third process
-                filename.write(identacion+"scanf(\""+"%d\","+contenido+");\n")
+                filename.write(identacion+"scanf(\""+"%d\",&"+contenido+");\n")
                 diccionario=contenido
             elif(patron3):
                 re.purge()
@@ -186,7 +188,7 @@ def traduccionmain():
                 #primero extraemos el nombre de la variable del array a declarar
                 #hay que declarar primero una variable para el tamaño del array
                 tam="tam"
-                filename.write(identacion+"const "+tam+"="+parametros[1]+";\n")
+                filename.write(identacion+"int "+tam+"="+parametros[1]+";\n")
                 contenido=re.search(REinputvar,i).group()
                 variables.append(contenido)
                 filename.write(identacion+"int datos["+tam+"];\n")
@@ -215,7 +217,41 @@ def traduccionmain():
                 parametros.append(contenido[1:])
                 filename.write(contenido+");\n")
             else:
-                print("\nSintax error in line ",cont,"\n\t\t",i," verify.")
-        filename.write("}")       
-                
+                print("\nSintax error in line \n\t\t",i," verify.")
+        filename.write("}")  
+    pruebafunciones()
+        
+def pruebafunciones():
+    archivo2=open("funciones.txt")
+    if(archivo2.readable()):
+        lineas2=archivo2.readlines()
+    else:
+        print("Error al abrir el archivo.")  
+    
+    #Primer Mock Up, encapsular cada funcion en una lista e ingresarla a otra lista
+    # with open('traduccion.cpp','w') as filename:
+    eachfunction=[]
+    fillit=[]
+    aux=0
+    aux2=0
+    #aqui se obtiene la cantidad de funciones
+    for i in lineas2:
+        patron=re.search(REdef,i)
+        if(patron):
+            aux2=aux2+1
+            
+    for i in lineas2:
+        patron=re.search(REdef,i)
+        if(patron and aux>0):
+            eachfunction.append(fillit)
+            fillit.clear
+            fillit.append(i)
+        elif(patron):
+            fillit.append(i)
+            aux=aux+1
+        else:
+            fillit.append(i)
+
+    print(eachfunction)
+            
 leertexto()
