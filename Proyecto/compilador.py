@@ -33,9 +33,12 @@ REtrypam1="[\"]([\w]+[\s]*)*[\:][\s]*[\"]"
 REtrypam2="[\,][\s]*([\w]+[a-zA-Z]+)+"
 
 ######################Aqui comienza la validación de la segunda parte, expresiones regulares para las funciones
-
-
-
+############Expresiones regulares para tipo de datos
+RElist="([a-zA-Z]+[\d]*)[\s]*[\=][\s]*\[[\s]*\]"
+REnum="([a-zA-Z]+[\d]*)[\s]*[\=][\s]*(([\d]+)|(([a-zA-Z]+[\d]*)[\s]*\[[\d]+\]))"
+##Esta RE sirve para extraer la cadena despues del return
+RElimp="[=][\s]*([a-zA-Z]+[\d]*)*\[(([a-zA-Z]+[\d]*)|([\d]*))[\s]*\]"
+RElimp2="[=][\s]*[\d]+"
 
 def leertexto():
     archivo=open("codigo.txt")
@@ -219,39 +222,84 @@ def traduccionmain():
             else:
                 print("\nSintax error in line \n\t\t",i," verify.")
         filename.write("}")  
-    pruebafunciones()
+    
+    
+    #Aqui ya se encapsularon las funciones en una multilista
+    encapsulacionfunciones()
         
-def pruebafunciones():
+def encapsulacionfunciones():
     archivo2=open("funciones.txt")
     if(archivo2.readable()):
         lineas2=archivo2.readlines()
     else:
         print("Error al abrir el archivo.")  
     
-    #Primer Mock Up, encapsular cada funcion en una lista e ingresarla a otra lista
-    # with open('traduccion.cpp','w') as filename:
-    eachfunction=[]
-    fillit=[]
-    aux=0
-    aux2=0
-    #aqui se obtiene la cantidad de funciones
-    for i in lineas2:
-        patron=re.search(REdef,i)
-        if(patron):
-            aux2=aux2+1
+    comp=[]#este array va servir para comparar con la función de main
+    funciones=[]
+    informacion=[]
+    band=0
+    cont=0
             
+    #Nueva propuesta
     for i in lineas2:
+        cont=cont+1
         patron=re.search(REdef,i)
-        if(patron and aux>0):
-            eachfunction.append(fillit)
-            fillit.clear
-            fillit.append(i)
-        elif(patron):
-            fillit.append(i)
-            aux=aux+1
+        if(patron and band==1):
+            informacion.append(funciones.copy())
+            comp.append(i)
+            funciones.clear()
+            funciones.append(i)
+        elif(patron and band==0):
+            funciones.append(i)
+            comp.append(i)
+            band=1
         else:
-            fillit.append(i)
-
-    print(eachfunction)
+            funciones.append(i)
+        if(cont==len(lineas2)):
+            informacion.append(funciones.copy())
             
+    traducciondef(informacion)
+
+#funcion para traducir todas las funciones
+#CASOS BASE A CONSIDERAR
+#LA TRADUCCIÓN DE FUNCIONES NO IMPORTA, LA TRADUCCIÓN DE MAIN SI
+#SI SE DECLARA UNA FUNCIÓN EN MAIN QUE NO EXISTE ES ERROR
+#Primer paso, verificar si el nombre de las funciones en main hacen match con las funciones en array funciones
+def traducciondef(funciones):
+    #primero identificar el tipo de función que es, guardarlo en un arreglo y despues copiarlo
+    # print(funciones)
+    #copiar las nuevas funciones ya traducidas al txt funciones para hacerles análisis
+    variables=[]
+    tipo=[]
+    contenido=[]
+    for i in range(len(funciones)):
+        for j in range(len(funciones[i])):
+            patron=re.search(RElist,funciones[i][j])#patron return
+            patron2=re.search(REnum,funciones[i][j])
+            patron3=re.search(REreturn,funciones[i][j])
+            if(patron):
+                #aqui se encuentran las variables para determinar el tipo de return
+                variables.append(funciones[i][j])
+                tipo.append("array")
+            if(patron2):
+                variables.append(funciones[i][j])
+                tipo.append("int")
+            ####Aqui se implementa la busqueda del return
+            if(patron3):
+                contenido.append(funciones[i][j])
+    #limpieza de variables
+    Svariable=",".join(variables)
+    Svariable=re.sub("\n|[\s]|"+RElimp+"|"+RElimp2,"",Svariable)
+    variables.clear()
+    variables=Svariable.split(",")
+    print(variables)
+    #limpieza para lista de return
+    Sreturn=",".join(contenido)
+    Sreturn=re.sub("\n|[\s]|return|"+RElimp+"|"+RElimp2,"",Sreturn)
+    contenido.clear()
+    contenido=Sreturn.split(",")
+    print(contenido)
+    print(tipo)
+    #Aqui ya se pueden clasificar las funciones por tipo into void
+                
 leertexto()
