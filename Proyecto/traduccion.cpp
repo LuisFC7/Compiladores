@@ -6,10 +6,10 @@ int main()
 {
     printf("Bienvenido a compiladores");
     int Datos=0;
-    printf("   Datos a introducir: ");
-    scanf("%d",Datos);
+    printf("Datos a introducir: ");
+    scanf("%d",&Datos);
     impresion("El usuario introducira",Datos);
-    const tam=Datos;
+    int tam=Datos;
     int datos[tam];
     llenarLista(Datos);
     int Suma=0;

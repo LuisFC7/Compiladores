@@ -39,6 +39,10 @@ REnum="([a-zA-Z]+[\d]*)[\s]*[\=][\s]*(([\d]+)|(([a-zA-Z]+[\d]*)[\s]*\[[\d]+\]))"
 ##Esta RE sirve para extraer la cadena despues del return
 RElimp="[=][\s]*([a-zA-Z]+[\d]*)*\[(([a-zA-Z]+[\d]*)|([\d]*))[\s]*\]"
 RElimp2="[=][\s]*[\d]+"
+###Expresiones finales
+RElimpf="[\(][\s]*([a-zA-Z]+[\d]*)[\s]*[\)]"
+REprintf="\([\s]*[a-zA-Z]+[\d]*[\s]*[\,][\s]*[a-zA-Z]+[\d]*[\s]*\)"
+REprintf2="((\([\s]*[a-zA-Z]+[\d]*[\s]*[\,][\s]*[a-zA-Z]+[\d]*[\s]*\))|(\([\s]*[a-zA-Z]+[\d]*[\s]*\))|(\([\s]*[\"][\s]*([a-zA-Z]+[\d]*[\s]*)*[\"][\,][\"][\s]*([a-zA-Z]+[\d]*[\s]*)*[\s]*[\"]\))|(\([\s]*[\"][\s]*([a-zA-Z]+[\d]*[\s]*)*[\"][\,]([a-zA-Z]+[\d]*)\)))"
 
 def leertexto():
     archivo=open("codigo.txt")
@@ -258,20 +262,13 @@ def encapsulacionfunciones():
         if(cont==len(lineas2)):
             informacion.append(funciones.copy())
             
-    traducciondef(informacion)
+    tipofun(informacion)
 
-#funcion para traducir todas las funciones
-#CASOS BASE A CONSIDERAR
-#LA TRADUCCIÓN DE FUNCIONES NO IMPORTA, LA TRADUCCIÓN DE MAIN SI
-#SI SE DECLARA UNA FUNCIÓN EN MAIN QUE NO EXISTE ES ERROR
-#Primer paso, verificar si el nombre de las funciones en main hacen match con las funciones en array funciones
-def traducciondef(funciones):
-    #primero identificar el tipo de función que es, guardarlo en un arreglo y despues copiarlo
-    # print(funciones)
-    #copiar las nuevas funciones ya traducidas al txt funciones para hacerles análisis
+def tipofun(funciones):
     variables=[]
     tipo=[]
     contenido=[]
+    nomfun=[]
     for i in range(len(funciones)):
         for j in range(len(funciones[i])):
             patron=re.search(RElist,funciones[i][j])#patron return
@@ -287,19 +284,85 @@ def traducciondef(funciones):
             ####Aqui se implementa la busqueda del return
             if(patron3):
                 contenido.append(funciones[i][j])
+                nomfun.append(funciones[i][0])
+    #nomfun nos sirve para guardar los nombres de las  funciones que sean de tipo return
     #limpieza de variables
     Svariable=",".join(variables)
     Svariable=re.sub("\n|[\s]|"+RElimp+"|"+RElimp2,"",Svariable)
     variables.clear()
     variables=Svariable.split(",")
-    print(variables)
     #limpieza para lista de return
     Sreturn=",".join(contenido)
     Sreturn=re.sub("\n|[\s]|return|"+RElimp+"|"+RElimp2,"",Sreturn)
     contenido.clear()
     contenido=Sreturn.split(",")
-    print(contenido)
-    print(tipo)
+
     #Aqui ya se pueden clasificar las funciones por tipo into void
+    #Siguiente etapa, hacer match entre con cada variable
+    #contenido guarda las coincidencias de return y variables las coincidencias de variables para posible match con return
+    #se procede a la escritura de funciones
+    arr=[]
+    for i in range(len(contenido)):
+        check=variables.index(contenido[i])#Indica la posicion en la que se encuentra la coincidencia
+        if(tipo[check]=="int"):
+            arr.append(tipo[check])
+        else:
+            arr.append(tipo[check])
+            
+    archivo=open("funciones.txt")
+    if(archivo.readable()):
+        lineas=archivo.readlines()
+    else:
+        print("Error al abrir el archivo.")
+        
+    REext="\([\s]*([a-zA-Z]+[\d]*)[\s]*\)"
+    identacion="    "
+    contador=0#va servir como detector de impresión de llaves
+    with open('traduccionfun.cpp','w') as filename:
+        for i in lineas:
+            patron=re.search(REdef,i)
+            patron2=re.search(REprint,i)
+            if(patron):
+                if((i in nomfun)==True):
+                    var=re.search(REext,i).group()
+                    nom=nomfun.index(i)
+                    if(arr[nom]=="array"):
+                        arr[nom]="int"
+                    Slimp=re.sub("def|[\s]|\:|"+RElimp2,"",i)
+                    writing=arr[nom]+" "+Slimp+"{"
+                    if(contador!=0):
+                        filename.write("}\n")
+                    filename.write(writing+"\n")
+                else:
+                    Slimp=re.sub("def|[\s]|\:|"+RElimp2,"",i)
+                    writing="void "+Slimp+"{"
+                    filename.write(writing+"\n")
+            if(patron2):
+                var=re.search(REprintf2,i).group()#obtenemos los parametros ya sea uno o varios
+                filename.write(identacion+"printf"+var+";"+"\n")
                 
+            contador=contador+1
+                # #Aqui se debe obtener lo que haya dentro de print
+                # filename.write(identacion+"printf("+contenido+");\n")
+                        
+    
+    # traducciondef(funciones,nomfun,arr)
+    
+# def traducciondef(funciones,nomfun,arr):
+#     #Aqui iterar sobre el archivo principal de la encapsulación de funciones
+#     archivo=open("funciones.txt")
+#     if(archivo.readable()):
+#         lineas=archivo.readlines()
+#     else:
+#         print("Error al abrir el archivo.")  
+#     print(nomfun)
+    
+#     lista=[]
+#     for i in range(len(funciones)):
+#         for j in range(len(funciones[i])):
+#             lista.append(funciones[i][j])
+    
+#     for i in range(len(lista)):
+#         aux.index(x)
+        
 leertexto()

@@ -1,5 +1,5 @@
 print("Bienvenido a compiladores")
-Datos=input("   Datos a introducir: ")
+Datos=input("Datos a introducir: ")
 impresion("El usuario introducira",Datos)
 Datos=llenarLista(int(Datos))
 Suma=sumatoria(Datos)
