@@ -15,7 +15,6 @@ REcont="(\"([\w]*[\s]*[\w]*)*\")"
 REinput="\A([\w]+[a-zA-z]+)+\=input[\(][\"]([\w]*[\s]*[\w]*)*[\:]*[\s]*[\"][\)]"
 REinputvar="\A([\w]+[a-zA-Z]+)"#Para extraer el nombre de variable
 REinputcont="([\"]([\w]*[\s]*[\w]*)*[\:]*[\s]*[\"])"#Para extraer contenido del scanf
-
 ######################Expresiones regulares
 REfunc="\Aimpresion[\s]*[\(][\s]*[\"]([a-zA-Z]+[\s]*)*[\"][\,][a-zA-Z]+[\)]"
 # REfunc="\Aimpresion[\(][\"][\s]*([\w]*[\s]*)*[\:]*[\s]*[\"][\s]*[\,][\s]*([\w]+[a-zA-Z]+)+[\s]*[\)]"
@@ -31,7 +30,6 @@ RElastfun="([\w]+[a-zA-Z]+)+[\s]*[\=][\s]*([\w]+[a-zA-Z]+)+[\s]*[\(][\s]*([\w]+[
 REtry="\Aimpresion"
 REtrypam1="[\"]([\w]+[\s]*)*[\:][\s]*[\"]"
 REtrypam2="[\,][\s]*([\w]+[a-zA-Z]+)+"
-
 ######################Aqui comienza la validación de la segunda parte, expresiones regulares para las funciones
 ############Expresiones regulares para tipo de datos
 RElist="([a-zA-Z]+[\d]*)[\s]*[\=][\s]*\[[\s]*\]"
@@ -43,7 +41,32 @@ RElimp2="[=][\s]*[\d]+"
 RElimpf="[\(][\s]*([a-zA-Z]+[\d]*)[\s]*[\)]"
 REprintf="\([\s]*[a-zA-Z]+[\d]*[\s]*[\,][\s]*[a-zA-Z]+[\d]*[\s]*\)"
 REprintf2="((\([\s]*[a-zA-Z]+[\d]*[\s]*[\,][\s]*[a-zA-Z]+[\d]*[\s]*\))|(\([\s]*[a-zA-Z]+[\d]*[\s]*\))|(\([\s]*[\"][\s]*([a-zA-Z]+[\d]*[\s]*)*[\"][\,][\"][\s]*([a-zA-Z]+[\d]*[\s]*)*[\s]*[\"]\))|(\([\s]*[\"][\s]*([a-zA-Z]+[\d]*[\s]*)*[\"][\,]([a-zA-Z]+[\d]*)\)))"
-
+REvariabled="\A[\s]{4}([a-zA-Z]+[\d]*)[\s]*[\=][\s]*(([\[][\s]*[\]])|([\d]+)|([a-zA-Z]+[\d]*))"
+REdecarray="([a-zA-Z]+[\d]*)[\s]*[\=][\s]*[\[][\s]*[\]]"
+REvariables="([a-zA-Z]+[\d]*)[\s]*[\=][\s]*(([\d]+)|(([a-zA-Z]+[\d]*)[\s]*[\[](([\d]+)|(([a-zA-Z]+[\d]*))))[\s]*[\]])"
+REvariablesimple="([a-zA-Z]+[\d]*)[\s]*[\=][\s]*(([\d]+)|([a-zA-Z]+[\d]*))"
+REizq="([a-zA-Z]+[\d]*)[\s]*[\=]"
+REder="[\=][\s]*([a-zA-Z]+[\d]*(([\[](([a-zA-Z]+[\d]*)|([\d]+))[\s]*[\]])*)|([\d]+))"
+#Expresiones para validación de for
+REforl1="[\s]{8}([a-zA-Z]+[\d]*)[\s]*(([\=][\s]*int[\s]*[\(]input[\s]*\([\s]*\"[\s]*([a-z-A-Z]+[\d]*[\s]*)*\:[\s]*\"[\s]*\)[\s]*\))|([\.][\s]*append\([\s]*([a-zA-Z]+[\d]*)[\s]*\)))"
+REforl2="[\s]{8}([a-zA-Z]+[\d]*)[\s]*(([\=][\s]*([a-zA-Z]+[\d]*)([\+]|[\*]|[\/]|[\-])[\s]*([a-zA-Z]+[\d]*)([\s]*[\[]([a-zA-Z]*[\d]*)[\s]*[\]]))|([\=]([a-zA-Z]+[\d]*)([\s]*[\[]([a-zA-Z]*[\d]*)[\s]*[\]])([\+]|[\*]|[\/]|[\-])([a-zA-Z]+[\d]*)))"
+REforl3="[\"][\s]*([a-zA-Z]+[\d]*[\s]*[\:]*)*[\s]*[\"]"
+REforl4="([a-zA-Z]+[\d]*)[\s]*[\=][\s]*int[\s]*[\(][\s]*input[\s]*[\(][\s]*[\"]([a-zA-Z]*[\d]*[\s]*[\:]*[\(]*[\)]*)*[\s]*[\"][\s]*[\)][\s]*[\)]"#nueva para input
+REforl5="[\s]{8}([a-zA-Z]+[\d]*)[\s]*[\.][\s]*(append)[\s]*[\(][\s]*([a-zA-Z]+[\d]*)[\s]*[\)]"#Nueva para append
+#Expresiones regulares para limpieza y obtención de variables para for
+RElimpfor="range[\s]*[\(][\s]*(([a-z-A-Z]+)|([\d]+))[\s]*[\,][\s]*(([a-z-A-Z]+)|([\d]+)|(len[\s]*[\(][\s]*([a-zA-Z]+[\d]*)[\s]*[\)][\s]*))[\)][\s]*\:"
+RElimpforr1="[,][\s]*([a-zA-Z]+[\d]*)"
+RElimpright="[\,][\s]*(([a-zA-Z]+[\d]*[\s]*[\)])|(len[\s]*[\(]([a-z-A-Z]+[\d]*)[\s]*[\)][\s]*[\)]))"
+RElimpright2="[\s]*([a-zA-Z]+|[\d]+)[\s]*[\(]"
+RElimpleft="(([a-zA-Z]+[\d]*)|([\d]+))[\s]*[\(][\s]*(([a-zA-Z]+[\d]*)|([\d]+))[\,]"
+REconvlen="len[\s]*\(([a-z-A-Z]+[\d]*)[\s]*\)"
+#Limpieza de funciones
+REappend="[\.][\s]*append[\s]*[\(][\s]*([a-zA-Z]+[\d]*)[\s]*[\)]"
+REbfun="([a-zA-Z]+[\d]*)[\s]*[\=][\s]*(([a-zA-Z]+[\d]*)|([\d]+)|(([a-zA-Z]+[\d]*)[\s]*[\[][\s]*(([a-zA-Z]+[\d]*)|([\d]+))[\s]*[\]]))[\s]*([\+]|[\-]|[\*]|[\/])[\s]*(([a-zA-Z]+[\d]*)|([\d]+)|(([a-zA-Z]+[\d]*)[\s]*[\[][\s]*(([a-zA-Z]+[\d]*)|([\d]+))[\s]*[\]]))"
+REbfunr="[\=][\s]*((([\w]+)([\+]|[\-]|[\*]|[\/])([\w]+)[\[]*([\w]+)[\s]*[\]]*)|(([\w]+)[\s]*[\[][\s]*([\w]*)[\s]*[\]]([\+]|[\-]|[\*]|[\/])([\w]+)[\[]*([\w]+)[\s]*[\]]*))"
+REbfunr2="([\+]|[\-]|[\*]|[\/])(([a-zA-Z]+[\d]*)|([\d]+))[\s]*([\[][\s]*(([a-zA-Z]+[\d]*)|[\d]+)[\s]*[\]])*"#Para borrar nombres de variables o numeros
+REbfunr3="[\w]+[\s]*[\=]"
+REbfunrl="(([a-zA-Z]+[\d]*)|([\d]+)|(([a-zA-Z]+[\d]*)[\s]*[\[](([a-zA-Z]+[\d]*)|([\d]*))[\s]*[\]]))([\+]|[\-]|[\*]|[\/])"
 def leertexto():
     archivo=open("codigo.txt")
     #Validate if file is readable
@@ -128,6 +151,7 @@ def encapsulacion():
                     filename.write(i)
 
     traduccionmain()
+    
 
 #comenzar a validar funciones
 def traduccionmain():
@@ -264,6 +288,7 @@ def encapsulacionfunciones():
             
     tipofun(informacion)
 
+#En esta función ya se empezó a traducir la parte de las funciones
 def tipofun(funciones):
     variables=[]
     tipo=[]
@@ -297,7 +322,7 @@ def tipofun(funciones):
     contenido.clear()
     contenido=Sreturn.split(",")
 
-    #Aqui ya se pueden clasificar las funciones por tipo into void
+    #Aqui ya se pueden clasificar las funciones por tipo int o void
     #Siguiente etapa, hacer match entre con cada variable
     #contenido guarda las coincidencias de return y variables las coincidencias de variables para posible match con return
     #se procede a la escritura de funciones
@@ -308,20 +333,29 @@ def tipofun(funciones):
             arr.append(tipo[check])
         else:
             arr.append(tipo[check])
-            
+        
+    #Aqui se da la traducción de las funciones completas
     archivo=open("funciones.txt")
     if(archivo.readable()):
         lineas=archivo.readlines()
     else:
         print("Error al abrir el archivo.")
         
+    #Aqui se realiza la traducción de las funciones
+    #se invoca directamente a la función de análisis de for
+    ciclos,posiciones,shadow=idenfor()
     REext="\([\s]*([a-zA-Z]+[\d]*)[\s]*\)"
+    REtipo="([a-zA-Z]+[\d]*)[\s]*[\=]"
     identacion="    "
     contador=0#va servir como detector de impresión de llaves
+    iterador=0#sirve para obtener posición de los ciclo for
+    diccionariovar=[]
     with open('traduccionfun.cpp','w') as filename:
         for i in lineas:
             patron=re.search(REdef,i)
             patron2=re.search(REprint,i)
+            patron3=re.search(REvariabled,i)
+            patron4=re.search(REfor,i)
             if(patron):
                 if((i in nomfun)==True):
                     var=re.search(REext,i).group()
@@ -340,29 +374,152 @@ def tipofun(funciones):
             if(patron2):
                 var=re.search(REprintf2,i).group()#obtenemos los parametros ya sea uno o varios
                 filename.write(identacion+"printf"+var+";"+"\n")
-                
+            if(patron3):
+                #Primero hacer el caso de análisis del arreglo
+                p1=re.search(REdecarray,i)
+                p2=re.search(REvariablesimple,i)
+                if(p1):
+                    if(p1 in diccionariovar):
+                        var=diccionariovar[iterador]
+                        filename.write(identacion+"vector<int> "+var+";\n")
+                    else:
+                        var=re.sub("[\s]|[\=]|[\[]|[\]]","",i)
+                        filename.write(identacion+"vector<int> "+var+";\n")
+                        diccionariovar.append(var)
+                #Ahora para el segundo caso variable simple solo casos sin asignación de array
+                if(p2):
+                    if(p2 in diccionariovar):
+                        var=diccionariovar[iterador]
+                        tipo=re.sub("\s|"+REtipo,"",i)
+                        filename.write(identacion+"int "+var+" = "+tipo+";\n")
+                        diccionariovar.append(var)
+                    else:
+                        var=re.sub("\s|"+REder,"",i)
+                        tipo=re.sub("\s|"+REtipo,"",i)#se determina el tipo de variable
+                        #Aqui se extrae el tipo
+                        filename.write(identacion+"int "+var+" = "+tipo+";\n")
+                        diccionariovar.append(var)
+            #Aqui se comienza a pasa directo la parte del análisis for
+            if(patron4):
+                if(iterador in posiciones):
+                    for comienzo in range(len(ciclos)):
+                        tope=re.search("\n    }",ciclos[comienzo])
+                        if(tope):
+                            filename.write(ciclos[comienzo])
+                            comienzo=comienzo
+                            break
+                        else:
+                            filename.write(ciclos[comienzo])
+                            
+                    
             contador=contador+1
+            iterador=iterador+1
                 # #Aqui se debe obtener lo que haya dentro de print
                 # filename.write(identacion+"printf("+contenido+");\n")
-                        
-    
-    # traducciondef(funciones,nomfun,arr)
-    
-# def traducciondef(funciones,nomfun,arr):
-#     #Aqui iterar sobre el archivo principal de la encapsulación de funciones
-#     archivo=open("funciones.txt")
-#     if(archivo.readable()):
-#         lineas=archivo.readlines()
-#     else:
-#         print("Error al abrir el archivo.")  
-#     print(nomfun)
-    
-#     lista=[]
-#     for i in range(len(funciones)):
-#         for j in range(len(funciones[i])):
-#             lista.append(funciones[i][j])
-    
-#     for i in range(len(lista)):
-#         aux.index(x)
+        filename.write("}")      
+        print(posiciones)
+#Función que realiza todo el análisis referente a la sintaxis del ciclo for,      
+def idenfor():
+    archivo=open("funciones.txt")
+    if(archivo.readable()):
+        lineas=archivo.readlines()
+    else:
+        print("Error al abrir el archivo.")
         
+    posicion=[]
+    cadenas=[]
+    contador=0
+    escritura=[]
+    identacion="    "
+    identacion2="       "
+        
+    #Aqui se obtuvieron las coincidencias de todos los for
+    for i in lineas:
+        patron=re.search(REfor,i)
+        patron2=re.search(REforl1,i)
+        patron3=re.search(REforl2,i)
+        # patron4=re.search(REforl3,i)
+        if(patron):
+            cadenas.append(i)
+            posicion.append(contador)
+        if(patron2):
+            cadenas.append(i)
+            posicion.append(contador)
+        if(patron3):
+            cadenas.append(i)
+            posicion.append(contador)
+        
+        contador=contador+1
+    
+    llave=0
+    shadow=[]
+    cntshadow=0
+    for i in range(len(cadenas)):
+        #Aqui se ingresa el contador para imprimir la llave de fin de ciclo
+        patron=re.search(REfor,cadenas[i])
+        patron2=re.search(REconvlen,cadenas[i])
+        patron3=re.search(REforl4,cadenas[i])
+        patron5=re.search(REforl5,cadenas[i])
+        patron6=re.search(REbfun,cadenas[i])
+        if(patron):
+            if(llave==0):
+                llave=1
+            else:
+                escritura.append("\n    }\n")
+            Slimp=re.sub("for|[\s]|in|"+RElimpfor,"",cadenas[i])
+            #Aqui se comienza con la primera limpieza del rango uno(va en la detección del ciclo for)
+            r1=re.sub("for|[\s]|in|range|\:|"+RElimpright,"",cadenas[i])
+            r2=re.sub("for|[\s]|in|range|\:","",cadenas[i])
+            r2=re.sub(RElimpleft,"",r2)
+            r1=re.sub(RElimpright2,"",r1)#Primer rango
+            r2 = r2[:-1]#segundo rango
+            if(patron2):
+                #Segunda limpieza para el rango 2 en caso de ser de tipo len
+                r2=re.sub("len|[\s]|\(|\)","",r2)
+                r2="sizeof("+r2+")"
+            escritura.append(identacion+"for(int "+Slimp+"="+r1+"; "+Slimp+"<"+r2+"; "+Slimp+"++){\n")
+            # shadow.append(cntshadow)
+        if(patron3):
+            #Primero obtener nombre de variable
+            variable=re.sub("int|input|\(|\)|[\s]|\=|"+REforl3,"",cadenas[i])
+            aux=variable
+            variable=identacion2+"int "+variable+"=0;\n"
+            escritura.append(variable)
+            #Ahora obtener parte del print
+            comillas=re.sub("int|input|\(|\)|\=|"+aux,"",cadenas[i])
+            comillas=re.sub("\A[\s]*[\"]|[\"][\s]*","",comillas)
+            comillas=identacion2+"printf(\""+comillas+"\");\n"
+            escritura.append(comillas)
+            #Ahora se ingresa la variable
+            ingresar=identacion2+"scanf(\""+"%d\",&"+aux+");\n"
+            escritura.append(ingresar)
+        if(patron5):
+            variable=re.sub("\s|"+REappend,"",cadenas[i])
+            #Se obtiene lo que hay dentro de los parentesis
+            contenido=re.sub("\s|\.|append|\(|\)|"+variable,"",cadenas[i])
+            escritura.append(identacion2+variable+" = "+contenido+";\n")
+        if(patron6):
+            variable=re.sub("\s|"+REbfunr,"",cadenas[i])
+            op1=re.sub("\s|"+REbfunr2,"",cadenas[i])
+            op1=re.sub("\s|"+REbfunr3,"",op1)#se obtiene el primer valor de operación
+            op2=re.sub("\s|"+REbfunrl,"",cadenas[i])
+            op2=re.sub("\s|"+REbfunr3,"",op2)
+            #Ahora se obtiene el operador
+            op=re.sub("\s|\=|\w|\[|\]","",cadenas[i])
+            escritura.append(identacion2+variable+" = "+op1+" "+op+" "+op2+";\n")
+    
+    escritura.append("\n    }\n")
+    
+    #obtener finalmente 
+    for j in range(len(escritura)):
+        patronex=re.search("for",escritura[j])
+        if(patronex):
+            shadow.append(cntshadow)
+        cntshadow=cntshadow+1
+    
+    # Se retornan los siguientes parametros
+    print(shadow)
+    print(escritura)
+    return escritura,posicion,shadow
+               
 leertexto()
