@@ -1,7 +1,7 @@
 import re
 import numpy as np
 REdef="\A(def[\s]*[\t]*([a-zA-Z][\w]+)[\(]([\s]*[\t]*)(([a-zA-Z][\w]*)|([\d]*)|([a-zA-Z][\d]*))([\s]*|[\t]*)?(([\,]([\s]*)[a-zA-Z][\w]*)|([\,]([\s]*)[\d]+)|([\,]([\s]*)[a-zA-Z][\d]+))*([\s]*[\t]*)[\)]\:)"
-REprint="print([\s]*|[\t]*)[\(]([\s]*[\t]*)(([\"]([\s]*[\t]*[\w]*)*[\"])|([\']([\s]*[\t]*[\w]*)*[\'])|([a-zA-Z][\w]*)|([a-zA-Z][\d]*)|([\d]*))([\s]*[\t]*)*([\s]*|[\t]*)?(([\,]([\s]*)[a-zA-Z][\w]*)|([\,]([\s]*)[a-zA-Z][\d]*)|([\,]([\s]*)[\d]*)|([\,]([\s]*)[\"]([\s]*[\t]*[\w]*)*[\"])|([\,]([\s]*)[\']([\s]*[\t]*[\w]*)*[\']))*([\s]*[\t]*)*\)"
+REprint="print([\s]*|[\t]*)[\(]([\s]*[\t]*)(([\"]([\s]*[\(]*[\)]*[\-]*[\.]*[\+]*[\/]*[\t]*[\w]*)*[\"])|([\']([\s]*[\(]*[\)]*[\-]*[\.]*[\+]*[\/]*[\t]*[\w]*)*[\'])|([a-zA-Z][\w]*)|([a-zA-Z][\d]*)|([\d]*))([\s]*[\t]*)*([\s]*|[\t]*)?(([\,]([\s]*)[a-zA-Z][\w]*)|([\,]([\s]*)[a-zA-Z][\d]*)|([\,]([\s]*)[\d]*)|([\,]([\s]*)[\"]([\s]*[\(]*[\)]*[\-]*[\.]*[\+]*[\/]*[\t]*[\w]*)*[\"])|([\,]([\s]*)[\']([\s]*[\(]*[\)]*[\-]*[\.]*[\+]*[\/]*[\t]*[\w]*)*[\']))*([\s]*[\t]*)*\)"
 REfor="for([\s]+[\t]*)[\w]+([\s]+[\t]*)in([\s]+[\t]*)range([\s]*[\t]*)\(([\s]*[\t]*)[\d]+([\s]*[\t]*)[\,]([\s]*|[\t]*)((len([\s]*[\t]*)\(([\s]*[\t]*)([a-zA-z][\w]*)([\s]*[\t]*)\))|([a-zA-Z][\w]*)|([a-zA-Z][\d]*)|([\d]+))([\s]*[\t]*)\)([\s]*[\t]*)\:"
 REarray="([a-zA-z][\w]*)([\s]*[\t]*)(([\.]([\s]*[\t]*)append([\s]*[\t]*)[\(]([\s]*[\t]*)[a-zA-Z][\w]*[\s]*[\)])|(\=([\s]*[\t]*)\[([\s]*[\t]*)(([a-zA-Z][\w]*)|([a-zA-Z][\d]*)|(([\-]?)[\d]+)|([\']([\s]*[\t]*[\w]*[\s]*[\t]*)*[\'])|([\"]([\s]*[\t]*[\w]*[\s]*[\t]*)*[\"]))*([\s]*[\t]*)?(([\,]([\s]*[\t]*)[\"]([\s]*[\t]*[\w]*[\s]*[\t]*)*[\"])|([\,]([\s]*[\t]*)[\']([\s]*[\t]*[\w]*[\s]*[\t]*)*[\'])|([\,]([\s]*[\t]*)[a-zA-Z][\w]*)|([\,]([\s]*[\t]*)[a-zA-Z][\d]*)|([\,]([\s]*[\t]*)[\-]?[\d]+))*([\s]*[\t]*)\]))"
 REint="([a-zA-Z][\w]*([\s]*[\t]*)[\=]([\s]*[\t]*)(([a-zA-Z][\w]*([\[]([\s]*[\t]*)(([a-z-A-Z][\w]*)|([\d]+))([\s]*[\t]*)[\]])*)|([\d]+))([\s]*[\t]*)(([\+]|[\-]|[\*]|[\/])([\s]*[\t]*)(([\d]+)|(([a-zA-Z][\w]*([\[]([\s]*[\t]*)(([a-z-A-Z][\w]*)|([\d]+))([\s]*[\t]*)[\]])*)|([\d]+))))?)"
@@ -11,7 +11,7 @@ REesp="(([\s]{4})+[\w]+)"
 #Expresión para eliminación de espacios
 REespmain="\A[\s]+"
 #Expresiones para  extracción de contenido semantico
-REcont="(\"([\w]*[\s]*[\w]*)*\")"
+REcont="(\"([\w]*[\s]*[\(]*[\)]*[\-]*[\.]*[\+]*[\/]*[\w]*)*\")"
 REinput="\A([\w]+[a-zA-z]+)+\=input[\(][\"]([\w]*[\s]*[\w]*)*[\:]*[\s]*[\"][\)]"
 REinputvar="\A([\w]+[a-zA-Z]+)"#Para extraer el nombre de variable
 REinputcont="([\"]([\w]*[\s]*[\w]*)*[\:]*[\s]*[\"])"#Para extraer contenido del scanf
@@ -115,7 +115,7 @@ def deteccion(lineas):
     if(error>1):
         exit
     else:
-        print("Compile and execution succesfully.")
+        print("Compiling...")
         encapsulacion()
 
 #Encapsulacion de funciones y lineas del txt generador
@@ -171,10 +171,15 @@ def traduccionmain():
     with open('traduccion.cpp','w') as filename:
         #declaración de librerias y estructura fundamental
         identacion="    "
-        librerias=["#include <iostream>","#include <cstring>","#include <cmath>","using namespace std;",  "int main()","{"]
+        librerias=["#include <iostream>","#include <cstring>","#include <cmath>","#include <vector>" ,"#include <stdio.h>","using namespace std;",  "int main()","{"]
         for j in librerias:
             filename.write(j+"\n")
+        
+        # declaraciones=funcionesmain()
+        # for k in range(len(declaraciones)):
+        #     filename.write(declaraciones[k]+"\n")
 
+        #aqui escribir los prototipos de función
         for i in lineas:
 
             patron=re.search(REprint,i)
@@ -209,12 +214,14 @@ def traduccionmain():
                 filename.write(identacion+contenido)
                 #obtenemos el primer parametro
                 contenido=re.search(REpam1,i).group()
+                contenido=re.sub("\"","",contenido)
                 parametros.append(contenido)
-                filename.write("("+contenido)
+                filename.write("("+"\""+contenido+" %d \"")
                 #obtenermos el segundo parametro
                 contenido=re.search(REpam2,i).group()
                 parametros.append(contenido[1:])
                 filename.write(contenido+");\n")
+                
             elif(patron4):
                 #primero extraemos el nombre de la variable del array a declarar
                 #hay que declarar primero una variable para el tamaño del array
@@ -223,34 +230,37 @@ def traduccionmain():
                 contenido=re.search(REinputvar,i).group()
                 variables.append(contenido)
                 filename.write(identacion+"int datos["+tam+"];\n")
+                asignacion="datos["+tam+"]="
                 variables.append("datos")
                 #Ahora se extrae el nombre de la función declarada
                 contenido=re.search(REnomf,i).group()
                 funciones.append(contenido[1:])
-                filename.write(identacion+contenido[1:]+"("+parametros[1]+");\n")
+                filename.write(identacion+asignacion+contenido[1:]+"("+parametros[1]+");\n")
             elif(patron5):
                 #obtener el nombre de la variable
                 contenido=re.search(REinputvar,i).group()
                 variables.append(contenido)
+                asignacion=contenido
                 filename.write(identacion+"int "+contenido+"=0;\n")
                 #nombre de  la funcion
                 contenido=re.search(REnomf,i).group()
                 funciones.append(contenido[1:])
-                filename.write(identacion+contenido[1:]+"("+variables[1]+");\n")
+                filename.write(identacion+asignacion+" = "+contenido[1:]+"("+variables[1]+");\n")
             elif(patron6):
                 contenido=re.search(REnombrefun,i).group()
                 funciones.append(contenido)
                 filename.write(identacion+contenido)
                 contenido=re.search(REtrypam1,i).group()
+                contenido=re.sub("\"","",contenido)
                 parametros.append(contenido)
-                filename.write("("+contenido)
+                filename.write("("+"\""+contenido+" %d\"")
+                # print(contenido)
                 contenido=re.search(REtrypam2,i).group()
                 parametros.append(contenido[1:])
                 filename.write(contenido+");\n")
             else:
                 print("\nSintax error in line \n\t\t",i," verify.")
         filename.write("}")  
-    
     
     #Aqui ya se encapsularon las funciones en una multilista
     encapsulacionfunciones()
@@ -344,36 +354,73 @@ def tipofun(funciones):
     #Aqui se realiza la traducción de las funciones
     #se invoca directamente a la función de análisis de for
     ciclos,posiciones,shadow=idenfor()
+    REret="return[\s]+[a-zA-Z]+[\d]*"
     REext="\([\s]*([a-zA-Z]+[\d]*)[\s]*\)"
     REtipo="([a-zA-Z]+[\d]*)[\s]*[\=]"
     identacion="    "
     contador=0#va servir como detector de impresión de llaves
     iterador=0#sirve para obtener posición de los ciclo for
     diccionariovar=[]
+    aux2=0
+    implementacion=[]
+    apun=1
     with open('traduccionfun.cpp','w') as filename:
         for i in lineas:
             patron=re.search(REdef,i)
             patron2=re.search(REprint,i)
             patron3=re.search(REvariabled,i)
             patron4=re.search(REfor,i)
+            patron5=re.search(REret,i)
             if(patron):
                 if((i in nomfun)==True):
                     var=re.search(REext,i).group()
                     nom=nomfun.index(i)
-                    if(arr[nom]=="array"):
-                        arr[nom]="int"
-                    Slimp=re.sub("def|[\s]|\:|"+RElimp2,"",i)
-                    writing=arr[nom]+" "+Slimp+"{"
-                    if(contador!=0):
-                        filename.write("}\n")
-                    filename.write(writing+"\n")
+                    if(nom==0):
+                        if(arr[nom]=="array"):
+                            arr[nom]="int"
+                        Slimp=re.sub("def|[\s]|\:|"+RElimp2,"",i)
+                        pa=re.sub("[\w]+[\s]*[\(]|\)","",Slimp)
+                        parametro="int "+pa
+                        nombre=re.sub("[\(][\w]+[\)]|[\s]","",Slimp)
+                        writing=arr[nom]+" "+nombre+"("+parametro+"){"
+                        pam=re.sub("int|\s","",parametro)
+                        diccionariovar.append(pam)
+                        im=arr[nom]+" "+nombre+"("+parametro+")"
+                        implementacion.append(im)
+                        if(contador!=0):
+                            filename.write("}\n")
+                        filename.write(writing+"\n")
+                    if(nom==1 or nom==2):
+                        if(arr[nom]=="array"):
+                            arr[nom]="int"
+                        Slimp=re.sub("def|[\s]|\:|"+RElimp2,"",i)
+                        pa=re.sub("[\w]+[\s]*[\(]|\)","",Slimp)
+                        parametro="int "+pa+"["+"]"
+                        nombre=re.sub("[\(][\w]+[\)]|[\s]","",Slimp)
+                        writing=arr[nom]+" "+nombre+"("+parametro+"){"
+                        im=arr[nom]+" "+nombre+"("+parametro+")"
+                        implementacion.append(im)
+                        if(contador!=0):
+                            filename.write("}\n")
+                        filename.write(writing+"\n")
+        
                 else:
                     Slimp=re.sub("def|[\s]|\:|"+RElimp2,"",i)
-                    writing="void "+Slimp+"{"
+                    #Se obtienen los dos parametros
+                    pa=re.sub("[\w]+[\s]*[\(]|\)","",Slimp)
+                    pa1=re.sub("[\,][\w]+[\s]*","",pa)
+                    pa2=re.sub("[\w]+[\s]*[\,]","",pa)
+                    nombre=re.sub("[\(][\w]*[\s]*[\,][\w]*[\s]*[\s]*[\)]","",Slimp)
+                    writing="void "+nombre+"(string "+pa1+", int "+pa2+"){"
                     filename.write(writing+"\n")
+                    im="void "+nombre+"(string "+pa1+", int "+pa2+")"
+                    implementacion.append(im)
             if(patron2):
                 var=re.search(REprintf2,i).group()#obtenemos los parametros ya sea uno o varios
-                filename.write(identacion+"printf"+var+";"+"\n")
+                pa1=re.sub("[\,][\s]*[\w]+[\s]*[\)]|[\(]","",var)
+                pa2=re.sub("[\s]*[\()][\w]+[\s]*[\,]","",var)
+                nombre=re.sub("[\(][\w]*[\s]*[\,][\w]*[\s]*[\s]*[\)]","",Slimp)
+                filename.write(identacion+"printf(\"%s %d\","+pa1+".c_str()"+","+pa2+";\n")
             if(patron3):
                 #Primero hacer el caso de análisis del arreglo
                 p1=re.search(REdecarray,i)
@@ -381,10 +428,10 @@ def tipofun(funciones):
                 if(p1):
                     if(p1 in diccionariovar):
                         var=diccionariovar[iterador]
-                        filename.write(identacion+"vector<int> "+var+";\n")
+                        filename.write(identacion+"int "+var+"["+diccionariovar[0]+"];\n")
                     else:
                         var=re.sub("[\s]|[\=]|[\[]|[\]]","",i)
-                        filename.write(identacion+"vector<int> "+var+";\n")
+                        filename.write(identacion+"int "+var+"["+diccionariovar[0]+"];\n")
                         diccionariovar.append(var)
                 #Ahora para el segundo caso variable simple solo casos sin asignación de array
                 if(p2):
@@ -402,22 +449,30 @@ def tipofun(funciones):
             #Aqui se comienza a pasa directo la parte del análisis for
             if(patron4):
                 if(iterador in posiciones):
-                    for comienzo in range(len(ciclos)):
+                    for comienzo in range(aux2, len(ciclos)):
                         tope=re.search("\n    }",ciclos[comienzo])
                         if(tope):
                             filename.write(ciclos[comienzo])
-                            comienzo=comienzo
+                            aux2=comienzo+1
                             break
                         else:
                             filename.write(ciclos[comienzo])
+            if(patron5):
+                retr=re.sub("\n","",i)
+                if(apun==1):
+                    var=re.sub("return|\s","",retr)
+                    filename.write(identacion+"return "+"*"+var+";\n")
+                    apun=0
+                else:
+                    filename.write(identacion+retr+";\n")
                             
                     
             contador=contador+1
             iterador=iterador+1
-                # #Aqui se debe obtener lo que haya dentro de print
-                # filename.write(identacion+"printf("+contenido+");\n")
+
         filename.write("}")      
-        print(posiciones)
+        funcionesmain(implementacion)
+
 #Función que realiza todo el análisis referente a la sintaxis del ciclo for,      
 def idenfor():
     archivo=open("funciones.txt")
@@ -497,7 +552,7 @@ def idenfor():
             variable=re.sub("\s|"+REappend,"",cadenas[i])
             #Se obtiene lo que hay dentro de los parentesis
             contenido=re.sub("\s|\.|append|\(|\)|"+variable,"",cadenas[i])
-            escritura.append(identacion2+variable+" = "+contenido+";\n")
+            escritura.append(identacion2+variable+"["+Slimp+"]"+" = "+contenido+";\n")
         if(patron6):
             variable=re.sub("\s|"+REbfunr,"",cadenas[i])
             op1=re.sub("\s|"+REbfunr2,"",cadenas[i])
@@ -518,8 +573,56 @@ def idenfor():
         cntshadow=cntshadow+1
     
     # Se retornan los siguientes parametros
-    print(shadow)
-    print(escritura)
+
     return escritura,posicion,shadow
-               
+              
+              
+def funcionesmain(funciones):
+    
+    archivo=open("traduccion.cpp")
+    if(archivo.readable()):
+        lineas=archivo.readlines()
+    else:
+        print("Error al abrir el archivo.")
+
+    
+    with open('codigo.cpp','w') as filename:
+        for i in lineas:
+            p=re.search("using namespace std;",i)
+            
+            if(p):
+                filename.write("using namespace std;\n")
+                for k in range(len(funciones)):
+                    filename.write(funciones[k]+";\n")
+            else:
+                filename.write(i)
+    
+    print("Has been compiled")
+    
+#     conv()
+# def conv():
+#     fu=[]
+#     archivo=open("traduccionfun.cpp")
+#     if(archivo.readable()):
+#         lineas=archivo.readlines()
+#     else:
+#         print("Error al abrir el archivo.")
+#     archivo2=open("codigo.cpp")
+#     if(archivo2.readable()):
+#         lineas2=archivo2.readlines()
+#     else:
+#         print("Error al abrir el archivo.")
+    
+#     for i in lineas:
+#         fu.append(i)   
+    
+#     with open('compiled.cpp','w') as filename:
+#         for k in lineas2:
+#             pa=re.search("\A}",k)
+#             if(pa):
+#                 filename.write("}\n\n")
+#                 for j in range(len(fu)):
+#                     filename.write(fu[j])
+#             else:
+#                 filename.write(k)
 leertexto()
